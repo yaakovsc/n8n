@@ -1,0 +1,131 @@
+{
+  "name": "מערכת סטיילינג",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "62f7a6af-0f86-462c-a133-b442e58c4394",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const inputString = $input.item.json.message.content; // Assuming your input variable is named 'message'\nconst recomendation = inputString;\nreturn {\n    json: {\n        recomendation: recomendation\n    }\n};\n"
+      },
+      "id": "07fe31b3-4536-41cb-8bc6-c8981224b3de",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bb0bf78e-cdd1-43d3-a441-d71adea0e036",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0c9f460c-f473-4c0a-a22d-0c4992583f32",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        340
+      ],
+      "webhookId": "bb0bf78e-cdd1-43d3-a441-d71adea0e036"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=you are responding as a top stylist. write a detailed recomendation including explanations on what to wear to an event in the {{ $json.body.season }} but curently with temperature {{ $json.body.temperature }} degree celsius. type of event {{ $json.body.eventType }}. a {{ $json.body.gender }} in the age of {{ $json.body.age }} , with skin tone {{ $json.body.skinTone }} who likes the colors {{ $json.body.selectedColors }}. the {{ $json.body.gender }} is bit {{ $json.body.style }} dresser. give a wholistic recomendation including clothes layers, colors matching , accessories, shoes - the whole. answer in hebrew. talk in a very friendly manner language matching the age of the requester. show few options for each category also explain matching colors. write recomendation not as categories, but like a fluent conversation. give advise on what colors will match the skin color."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eeaecf75-e8bd-4bbc-b61c-92963d1a7546",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        400,
+        340
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "x6YOonkQg6Gp1pcg",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e80d92af-1f2a-4679-9046-c32ae3af25cb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a5f99c0be716f8d6880fa5638f7e7c45977a279dadafde2466cb9813a30d11f"
+  },
+  "id": "tftHopq6vEu7fliY",
+  "tags": []
+}
